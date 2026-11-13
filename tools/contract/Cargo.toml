@@ -1,0 +1,12 @@
+[package]
+name = "hoxorion-contract"
+version = "0.1.0"
+edition = "2024"
+authors = ["NullSablex and the Hoxorion contributors"]
+license = "MPL-2.0"
+description = "The checks every Hoxorion repository is held to: licensing, and DCO/CLA sign-offs"
+publish = false
+
+# No dependencies: the CI builds this on every run of every repository, so it must build
+# in seconds and must not pull code from anywhere to judge other code.
+[dependencies]

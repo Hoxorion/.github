@@ -1,0 +1,27 @@
+# This repository is held to its own contract, and the checker's tests run first.
+name: Contract
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Checker tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: cargo test --manifest-path tools/contract/Cargo.toml
+
+  contract:
+    needs: tests
+    uses: ./.github/workflows/contract.yml
+    with:
+      license: MPL-2.0

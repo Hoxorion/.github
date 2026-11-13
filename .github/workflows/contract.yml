@@ -1,0 +1,61 @@
+# The checks every Hoxorion repository is held to, in one place. A repository calls this
+# from its own workflow (see workflow-templates/contract.yml) with the licence it is under:
+#
+#   Licensing   - LICENSE, every Cargo.toml's licence and holders, the header of every source
+#                 file, and the DCO and CLA.md that contributions are accepted under.
+#   DCO and CLA - on a pull request, every commit carries its author's and each co-author's
+#                 own Signed-off-by: the sign-off certifies the DCO and accepts the CLA.
+#
+# Both are meant to be required status checks of the default branch.
+name: Contract
+
+on:
+  workflow_call:
+    inputs:
+      license:
+        description: The repository's SPDX licence identifier (MPL-2.0 or Apache-2.0).
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  licensing:
+    name: Licensing
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Hoxorion/.github
+          path: .contract
+          persist-credentials: false
+      - name: Licensing holds
+        env:
+          LICENSE_ID: ${{ inputs.license }}
+        run: cargo run -q --manifest-path .contract/tools/contract/Cargo.toml -- licensing --license "$LICENSE_ID"
+
+  sign-off:
+    name: DCO and CLA
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Hoxorion/.github
+          path: .contract
+          persist-credentials: false
+      - name: Every commit is signed off by its authors
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: cargo run -q --manifest-path .contract/tools/contract/Cargo.toml -- dco --base "$BASE" --head "$HEAD"

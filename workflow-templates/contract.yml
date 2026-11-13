@@ -1,0 +1,17 @@
+# Holds this repository to the Hoxorion contract: licensing on every push and pull request,
+# DCO and CLA sign-offs on every pull request. Set the licence to the one in LICENSE.
+name: Contract
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    uses: Hoxorion/.github/.github/workflows/contract.yml@master
+    with:
+      license: MPL-2.0

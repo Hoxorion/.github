@@ -1,0 +1,6 @@
+{
+  "name": "Hoxorion contract",
+  "description": "Licensing on every push; DCO and CLA sign-offs on every pull request.",
+  "iconName": "octicon shield-check",
+  "categories": ["Rust"]
+}
